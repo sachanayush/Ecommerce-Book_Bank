@@ -1,15 +1,64 @@
-import mongoose, {Schema, model} from 'mongoose';
+import {Schema, model, Types} from 'mongoose';
 import { USER_ROLES } from '../constants/userRoles';
 
+export interface IRefreshToken {
+   token: string;
+   createdAt: number;
+   expiresAt: number;
+}
+
+export interface ISession {
+   accessToken: string;
+   refreshToken?: IRefreshToken;
+   idAddress: string,
+   createdAt: number;
+   expiresAt: number;
+}
+
 export interface IUser {
+   _id ?:Types.ObjectId;
    name: string,
    email: string,
    password: string,
    phonNo?: number,
    role: number,
+   sessions: ISession[],
    createdOn: Date,
    updatedOn: Date
 }
+
+const refreshSchema = new Schema({
+      token: {
+         type: String,
+      },
+      createdAt:{
+         type: Number
+      },
+      expiresAt: {
+         type: Number
+      }
+});
+
+const sessionSchema = new Schema({
+    accessToken:{
+      type: String,
+      unique: true,
+      required: true
+    },
+    refreshToken: refreshSchema,
+    idAddress: {
+      type: String,
+      required: true
+    },
+    createdAt: {
+      type: Number,
+      required: true
+    },
+    expiresAt: {
+      type: Number,
+      required: true
+   }
+})
 
 export const userSchema = new Schema({
    name:{
@@ -31,6 +80,10 @@ export const userSchema = new Schema({
    role: {
     type: Number, 
     default: USER_ROLES.USER
+   },
+   sessions: {
+     type: [sessionSchema],
+     required: true
    },
    createdOn:{
     type: Date,

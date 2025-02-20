@@ -1,7 +1,13 @@
 import { createLogger, format, transports } from "winston";
 import config from "config";
+import path from "path";
+import fs from "fs";
 
 const { combine, timestamp, json, colorize } = format;
+const logDir = path.join(__dirname, '../logs');
+if(!fs.existsSync(logDir)){
+  fs.mkdirSync(logDir);
+}
 
 /**
  * @constant {Format} consoleLogFormat
@@ -30,7 +36,7 @@ const logger = createLogger({
     new transports.Console({
       format: consoleLogFormat,
     }),
-    new transports.File({ filename: "app.log" }),
+    new transports.File({ filename: path.join(logDir, "app.log") }),
   ],
 });
 

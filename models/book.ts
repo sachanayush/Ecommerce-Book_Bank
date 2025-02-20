@@ -1,4 +1,4 @@
-import mongoose, {Schema, model, Document, Types} from 'mongoose';
+import {Schema, model, Document, Types} from 'mongoose';
 
 interface IImageProperty{
     name: String,
@@ -17,9 +17,10 @@ export interface IBook {
     description?: IDescription;
     price?: Number;
     edition?: Types.ObjectId;
-    images?: Array<IImageProperty>
+    images?: Array<IImageProperty>;
     category?: Types.ObjectId;
     pages?: Number;
+    // createdAt: Date;
 }
 
 const descriptionSchema = new Schema({
@@ -49,8 +50,8 @@ export const bookSchema = new Schema({
         // required: true
     },
     description: {
-                type: descriptionSchema,
-                // required: true
+        type: descriptionSchema,
+        // required: true
     },
     price: {
           type: Number,
@@ -71,6 +72,10 @@ export const bookSchema = new Schema({
     },
     pages: {
           type: Number
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now()
     }
 });
 

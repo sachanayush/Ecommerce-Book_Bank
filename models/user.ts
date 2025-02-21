@@ -10,13 +10,13 @@ export interface IRefreshToken {
 export interface ISession {
    accessToken: string;
    refreshToken?: IRefreshToken;
-   idAddress: string,
+   ipAddress: string,
    createdAt: number;
    expiresAt: number;
 }
 
 export interface IUser {
-   _id ?:Types.ObjectId;
+   _id ?:Types.ObjectId | string | undefined;
    name: string,
    email: string,
    password: string,
@@ -46,7 +46,7 @@ const sessionSchema = new Schema({
       required: true
     },
     refreshToken: refreshSchema,
-    idAddress: {
+    ipAddress: {
       type: String,
       required: true
     },

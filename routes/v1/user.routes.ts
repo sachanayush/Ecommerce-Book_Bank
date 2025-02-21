@@ -1,24 +1,52 @@
 import express from 'express';
 import { UsersController } from '../../controller/users.controller';
-import { celebrate, Joi, Segments} from 'celebrate';
-import { ChangePasswordSchema, validateRequestBody } from '../../schemas/UserValidation';
+import { validateRequestBody } from '../../schemas';
+import { ChangePasswordSchema, CheckUserPresentSchema, CreateUserSchema, DeleteUserSchema, LoginSchema, UpdateUserDetailsSchema} from '../../schemas/userSchema';
+import { Auth } from '../../middlewares/auth';
 
 const router = express.Router();
+//Test
+    router.get('/test', Auth.validateAccessToken, 
+        async function test(req: any, res) {
+            res.status(200).json("Basic Auth working");
+        }
+    )
 
+/**
+ * @route GET /books/all
+ * @group books - Operations related to book management
+ * @description Retrieve all books from the database
+ */
 router.get(
     '/all',
+    // Auth.basicAuth,
     UsersController.getAllUsers
 );
 
+/**
+ * @route GET /books/id/{id}
+ * @group books - Operations related to book management
+ * @param {string} id - Book ID (must be a valid ObjectId)
+ * @description Retrieve a book by its ID
+ */
 router.get(
     '/id/:id',
+    // Auth.basicAuth,
     UsersController.getUserById
-)
+);
 
-// router.get(
-//     '/me',
-//     UsersController.getUserByToken
-// )
+/**
+ * @route GET /books/me
+ * @group books - Operations related to book management
+ * @description Retrieve books associated with the currently authenticated user
+ */
+router.get(
+    '/getUserByToken',
+    Auth.decryptAccessToken,
+    // Auth.basicAuth,
+    // Auth.validateAccessToken,
+    UsersController.getUserByToken
+);
 
 /**
  * @route POST users/checkUserPresent
@@ -27,11 +55,8 @@ router.get(
  */
 router.post(
     '/checkUserPresent',
-    celebrate({
-      [Segments.BODY]: Joi.object().keys({
-        email: Joi.string().email().required()
-      })
-    }),
+    // Auth.basicAuth,
+    validateRequestBody(CheckUserPresentSchema),
     UsersController.checkUserPresent
 );
 
@@ -46,15 +71,8 @@ router.post(
  */
 router.post(
     '/create',
-    celebrate({
-        [Segments.BODY]: Joi.object().keys({
-           name: Joi.string().min(3).max(30).required(),
-           email: Joi.string().email().required(),
-           password: Joi.string().min(8).required().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/),
-           phoneNo: Joi.number().min(10).max(10).optional(),
-           role: Joi.number().valid(0,1).required()
-        })
-    }),
+    // Auth.basicAuth,
+    // validateRequestBody(CreateUserSchema),
     UsersController.createNewUser
 )
 
@@ -66,14 +84,10 @@ router.post(
  */
 router.post(
     '/login',
-    celebrate({
-        [Segments.BODY]: Joi.object().keys({
-          email : Joi.string().required(),
-          password : Joi.string().required()
-        })
-    }),
+    // Auth.basicAuth,
+    // validateRequestBody(LoginSchema),
     UsersController.login
-)
+);
 
 /**
  * @route UPDATE /users/update
@@ -84,19 +98,12 @@ router.post(
  * @param {number} updates.role - User role (0 = Regular User, 1 = Admin)
  */
 router.put(
-    '/update',
-    celebrate({
-        [Segments.BODY]: Joi.object().keys({
-            updates: Joi.object().keys({
-                name: Joi.string().min(3).max(30).optional(),
-                email: Joi.string().email().optional(),
-                phoneNo: Joi.number().min(10).max(10).optional(),
-                role: Joi.number().valid(0,1).optional(),
-            }).min(1)
-        })
-    }),
+    '/update/:userId',
+    // Auth.basicAuth,
+    // Auth.validateAccessToken,
+    // validateRequestBody(UpdateUserDetailsSchema),
     UsersController.updateUserDetails
-)
+);
 
 /**
  * @route DELETE users/delete
@@ -105,16 +112,22 @@ router.put(
  */
 router.delete(
     '/delete',
-    celebrate({
-        [Segments.BODY]: Joi.object().keys({
-            email: Joi.string().email().required
-        })
-    }),
+    // Auth.basicAuth,
+     validateRequestBody(DeleteUserSchema),
     UsersController.deleteUser
 )
 
+/**
+ * @route POST users/changePassword
+ * @group users - Operations related to the user management
+ * @param {string} email - User's email (must provide the email)
+ * @param {string} oldPassword - User's old password
+ * @param {string} newPassword - User's new password
+ * @param {string} confirmNewPassword - User's new password
+ */
 router.post(
     '/changePassword',
+    Auth.basicAuth,
     validateRequestBody(ChangePasswordSchema),
   )
 

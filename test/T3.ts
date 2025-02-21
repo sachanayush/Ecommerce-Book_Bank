@@ -1,8 +1,11 @@
 import { DaoFactory } from "../daoLayer";
-import {IBook} from '../models/book';
+import {Book, IBook} from '../models/book';
 
-const dao = DaoFactory.getDao();
+const dao = DaoFactory.getDao<IBook>(Book);
 
+/**
+ * Test for the CRUD Operations in Generic way
+ */
 export default async function T1() {
     const newBook = {
         title: "Test Book",

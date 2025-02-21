@@ -1,6 +1,9 @@
 import { firebaseDao } from '../daoLayer/firebaseDao';
 import { IBook, Book } from '../models/book'
 
+/**
+ * Test for the CRUD Operations in FireBaseDB
+ */
 export default async function T2() {
     const bookDao = new firebaseDao<IBook>('books');
     const newBookDetails = {

@@ -1,6 +1,9 @@
 import { MongoDao } from '../daoLayer/mongoDao'
 import { IBook, Book } from '../models/book'
 
+/**
+ * Test for the CRUD Operations in MongoDB
+ */
 const dao = new MongoDao<IBook>(Book);
 export default async function T1() {
 

@@ -1,11 +1,20 @@
-import { FirebaseApp, initializeApp, getApps, getApp } from "firebase/app";
+import { FirebaseApp, initializeApp } from "firebase/app";
 import { Database, getDatabase } from "firebase/database";
 import config from "config";
 
+/**
+ * @class FirebaseDb
+ * @description Manages Firebase database connection and application instance.
+ */
 export class FirebaseDb {
     private static app : FirebaseApp;
     private static database : Database;
 
+    /**
+     * @description Initializes and retrieves the Firebase application instance.
+     * @returns {FirebaseApp | undefined} - The initialized Firebase app instance or undefined if an error occurs.
+     * @throws {Error} - Logs an error message if Firebase initialization fails.
+     */
     static getApp() {
         try {
             const firebaseConfig = {
@@ -17,33 +26,14 @@ export class FirebaseDb {
             console.log("Connected with Firebase")
             return this.app;
         } catch (error: any) {
-            console.log(error.message);
+            throw new Error("FirebaseDB not connected");
         }
     }
 
-    // static getApp(): FirebaseApp {
-    //     try {
-    //         const firebaseConfig = {
-    //             databaseURL: config.get<string>('firebaseURL')
-    //         };
-
-    //     if (!this.app) {
-    //       if (getApps().length === 0) {
-    //         this.app = initializeApp(firebaseConfig);
-    //       } else {
-    //         this.app = getApp(); 
-    //       }
-    //     }
-    // }catch(err){
-    //     console.log(err);
-    // }
-    //     return this.app;
-    //   }
-
-    // static getApp(){
-    //     return this.app
-    // }
-
+    /**
+     * @description Retrieves the Firebase database instance.
+     * @returns {Database} - The Firebase database instance.
+     */
     static getDb(){
         return this.database
     }

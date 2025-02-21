@@ -1,21 +1,36 @@
-import express from 'express';
-import mongoConnection from './databases/mongoDB';
-import {FirebaseDb} from './databases/firebaseDB';
+import express, {Application} from 'express';
 import config from 'config';
-
-import T2 from './test/T2';
+import logger from "./utils/logger";
+import T3 from './test/T3'
+import userRoute from './routes/v1/user.routes'
+import { errors } from 'celebrate';
+import startMongoConnection from './databases/mongoDB';
 
 const app = express();
-mongoConnection();
-FirebaseDb.createConnection()
-const PORT = config.get('PORT');
+
+const loadRoutes = (app : Application ) => {
+  app.use('/users', userRoute);
+} 
+/**
+ * Function to connect with all the required Database
+ */
+const dbConnection = () => {
+  startMongoConnection();
+}
+app.use(express.json()); 
+
 console.log('ENVIRONMENT', config.get("ENVIRONMENT"))
-// T2().then(()=> {console.log("Executed Successfully")}).catch((error)=> {console.log(error)});
+T3().then(()=> {console.log("Executed Successfully")}).catch((error)=> {console.log(error)});
+
+loadRoutes(app);
+dbConnection();
 
 app.get('/', (req, res)=>{
+  logger.log('info', 'hello', { message: 'world' });
     res.send("Server started");
 })
 
-app.listen(PORT, ()=>{
-    console.log(`Server Started at Port ${PORT}`);
+app.use(errors());
+app.listen(config.get('PORT'), ()=>{
+    console.log(`Server Started at Port ${config.get('PORT')}`);
 });
